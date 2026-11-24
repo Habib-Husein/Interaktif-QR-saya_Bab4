@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kuis Interaktif & Simulator — Bab IV Hukum Logika</title>
+  <style>
+    :root {
+      --primary: #1B4332;
+      --primary-dark: #112C20;
+      --primary-mid: #2D6A4F;
+      --amber: #F2B705;
+      --amber-soft: #FFFBEB;
+      --terakota: #D96B43;
+      --terakota-soft: #FDF2F0;
+      --slate-bg: #F2F7F4;
+      --ink: #1E293B;
+      --muted: #5A6B62;
+      --ok: #15803D;
+      --ok-soft: #F0FDF4;
+      --border: #D5E3DB;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--slate-bg);
+      color: var(--ink);
+      line-height: 1.55;
+      min-height: 100vh;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 680px;
+      background: #FFFFFF;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(27, 67, 50, 0.11);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .header {
+      background: var(--primary);
+      color: #FFFFFF;
+      padding: 20px 24px 18px;
+      border-bottom: 5px solid var(--amber);
+    }
+
+    .pill {
+      display: inline-block;
+      background: var(--amber);
+      color: var(--primary-dark);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+
+    .header h1 {
+      font-size: 20.5px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: #D8EAE0;
+    }
+
+    /* Tab Navigation */
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #E8F1EC;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      border: none;
+      background: transparent;
+      padding: 13px 12px;
+      font-size: 13.8px;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .tab-btn:hover {
+      background: #DFECE5;
+      color: var(--primary);
+    }
+
+    .tab-btn.active {
+      background: #FFFFFF;
+      color: var(--primary);
+      border-bottom-color: var(--amber);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .progress-wrap {
+      padding: 14px 24px 0;
+      background: #FFFFFF;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .progress-track {
+      height: 8px;
+      background: #E2EFE8;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--amber));
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    .content {
+      padding: 20px 24px 26px;
+    }
+
+    .badge-cat {
+      display: inline-block;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--slate-bg);
+      border-left: 3px solid var(--amber);
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+
+    .question-text {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 14px;
+    }
+
+    .formula-box {
+      background: var(--slate-bg);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--primary-dark);
+      margin-bottom: 16px;
+      overflow-x: auto;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .opt-btn {
+      width: 100%;
+      text-align: left;
+      background: #FFFFFF;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 14.5px;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .opt-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: #F6FAF7;
+    }
+
+    .opt-btn:disabled { cursor: default; }
+
+    .opt-letter {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      background: var(--slate-bg);
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .opt-btn.correct { border-color: var(--ok); background: var(--ok-soft); }
+    .opt-btn.correct .opt-letter { background: var(--ok); color: #FFFFFF; }
+    .opt-btn.wrong { border-color: var(--terakota); background: var(--terakota-soft); }
+    .opt-btn.wrong .opt-letter { background: var(--terakota); color: #FFFFFF; }
+
+    .feedback {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-size: 13.8px;
+      display: none;
+    }
+
+    .feedback.show { display: block; }
+    .feedback.is-ok { background: var(--ok-soft); border-left: 4px solid var(--ok); }
+    .feedback.is-wrong { background: var(--terakota-soft); border-left: 4px solid var(--terakota); }
+    .feedback-title { font-weight: 800; margin-bottom: 6px; }
+    .feedback.is-ok .feedback-title { color: var(--ok); }
+    .feedback.is-wrong .feedback-title { color: #B43D19; }
+
+    .steps { margin-top: 6px; padding-left: 18px; color: var(--ink); }
+    .steps li { margin-bottom: 3px; }
+
+    .actions {
+      margin-top: 18px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 10px;
+      padding: 11px 20px;
+      font-size: 14.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-primary:disabled { background: #94A3B8; cursor: not-allowed; }
+
+    .btn-amber {
+      background: var(--amber);
+      color: var(--primary-dark);
+      border: none;
+      border-radius: 10px;
+      padding: 11px 20px;
+      font-size: 14.5px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-amber:hover { filter: brightness(0.95); }
+
+    .result-card { text-align: center; padding: 10px 4px; display: none; }
+    .result-card.show { display: block; }
+
+    .score-ring {
+      width: 116px;
+      height: 116px;
+      margin: 8px auto 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 6px solid var(--amber);
+      color: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .score-num { font-size: 30px; font-weight: 800; line-height: 1.05; }
+    .score-sub { font-size: 11.5px; color: var(--amber); font-weight: 700; }
+    .result-title { font-size: 20px; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
+    .result-desc { font-size: 14px; color: var(--muted); margin-bottom: 18px; }
+
+    .summary-list {
+      text-align: left;
+      background: var(--slate-bg);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      font-size: 13px;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .summary-item:last-child { border-bottom: none; }
+    .tag-ok { color: var(--ok); font-weight: 700; }
+    .tag-no { color: var(--terakota); font-weight: 700; }
+
+    /* Simulator Styles */
+    .sim-intro {
+      font-size: 13.6px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .preset-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 7px;
+    }
+
+    .presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .preset-chip {
+      border: 1px solid var(--border);
+      background: var(--slate-bg);
+      color: var(--primary);
+      border-radius: 999px;
+      padding: 5px 11px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .preset-chip:hover {
+      background: var(--amber-soft);
+      border-color: var(--amber);
+    }
+
+    .input-group {
+      margin-bottom: 12px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 5px;
+    }
+
+    .expr-input {
+      width: 100%;
+      padding: 10px 12px;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 14.5px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      color: var(--ink);
+      background: #FFFFFF;
+      outline: none;
+    }
+
+    .expr-input:focus {
+      border-color: var(--primary);
+      background: #FAFCFB;
+    }
+
+    .sym-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+      align-items: center;
+    }
+
+    .sym-hint {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-right: 4px;
+    }
+
+    .sym-btn {
+      border: 1px solid var(--border);
+      background: #FFFFFF;
+      color: var(--primary);
+      font-family: "Consolas", monospace;
+      font-size: 13.5px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .sym-btn:hover {
+      background: var(--slate-bg);
+      border-color: var(--primary);
+    }
+
+    .sim-status {
+      margin-top: 16px;
+      padding: 13px 15px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      display: none;
+    }
+
+    .sim-status.show { display: block; }
+    .sim-status.eq { background: var(--ok-soft); border-left: 5px solid var(--ok); color: var(--ok); }
+    .sim-status.neq { background: var(--terakota-soft); border-left: 5px solid var(--terakota); color: #B43D19; }
+    .sim-status.err { background: var(--amber-soft); border-left: 5px solid var(--amber); color: #92400E; }
+
+    .sim-sub {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-top: 3px;
+    }
+
+    .table-wrap {
+      margin-top: 14px;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: none;
+    }
+
+    .table-wrap.show { display: block; }
+
+    .tt {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .tt th {
+      background: var(--primary);
+      color: #FFFFFF;
+      padding: 8px 10px;
+      font-weight: 700;
+      border-bottom: 3px solid var(--amber);
+      font-family: "Consolas", monospace;
+    }
+
+    .tt td {
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border);
+      font-family: "Consolas", monospace;
+    }
+
+    .tt tr:nth-child(even) td { background: #F7FBF9; }
+    .tt tr.row-diff td { background: var(--terakota-soft); font-weight: 700; color: #9A3412; }
+    .tt tr:last-child td { border-bottom: none; }
+
+    .val-t { color: var(--ok); font-weight: 700; }
+    .val-f { color: var(--terakota); font-weight: 700; }
+
+    .syntax-note {
+      margin-top: 12px;
+      font-size: 11.8px;
+      color: var(--muted);
+      background: var(--slate-bg);
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    .footer-note {
+      text-align: center;
+      padding: 12px 16px;
+      font-size: 11.5px;
+      color: var(--muted);
+      background: #F6FAF7;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 8px; }
+      .header { padding: 16px; }
+      .content { padding: 15px; }
+      .progress-wrap { padding: 12px 15px 0; }
+      .header h1 { font-size: 18px; }
+      .question-text { font-size: 15px; }
+      .tab-btn { font-size: 12.8px; padding: 11px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <span class="pill">Bab IV • Logika Matematika</span>
+      <h1>Kuis Interaktif &amp; Simulator Logika</h1>
+      <p>8 soal cepat + simulator tabel kebenaran otomatis • S1 Ilmu Komputer</p>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab-btn active" id="tabQuizBtn" role="tab" aria-selected="true">
+        1. Kuis Interaktif (8 Soal)
+      </button>
+      <button class="tab-btn" id="tabSimBtn" role="tab" aria-selected="false">
+        2. Simulator Ekuivalensi
+      </button>
+    </nav>
+
+    <!-- TAB 1: KUIS INTERAKTIF -->
+    <div class="tab-panel active" id="panelQuiz">
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-meta">
+          <span id="qCounter">Soal 1 dari 8</span>
+          <span id="scoreLive">Skor: 0</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+      </div>
+
+      <section class="content">
+        <div id="quizView">
+          <span class="badge-cat" id="qCat"></span>
+          <div class="question-text" id="qText"></div>
+          <div class="formula-box" id="qFormula"></div>
+          <div class="options" id="optionsBox"></div>
+          <div class="feedback" id="feedbackBox">
+            <div class="feedback-title" id="feedbackTitle"></div>
+            <div id="feedbackDesc"></div>
+            <ol class="steps" id="feedbackSteps"></ol>
+          </div>
+          <div class="actions">
+            <button class="btn-primary" id="nextBtn" disabled>Soal Berikutnya →</button>
+          </div>
+        </div>
+
+        <div class="result-card" id="resultView">
+          <div class="score-ring">
+            <span class="score-num" id="finalScore">0/8</span>
+            <span class="score-sub" id="finalPct">0%</span>
+          </div>
+          <h2 class="result-title" id="resultTitle"></h2>
+          <p class="result-desc" id="resultDesc"></p>
+          <div class="summary-list" id="summaryList"></div>
+          <button class="btn-amber" id="retryBtn">↻ Ulangi Kuis</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- TAB 2: SIMULATOR EKUIVALENSI LOGIKA -->
+    <div class="tab-panel" id="panelSim">
+      <section class="content">
+        <p class="sim-intro">
+          Bandingkan dua ekspresi boolean dengan variabel <strong>p, q, r</strong> untuk mengecek apakah keduanya <strong>ekuivalen (≡)</strong> pada seluruh kombinasi tabel kebenaran.
+        </p>
+
+        <div class="preset-label">Contoh Cepat (Klik untuk Mengisi)</div>
+        <div class="presets" id="presetBox"></div>
+
+        <div class="sym-bar">
+          <span class="sym-hint">Sisipkan simbol:</span>
+          <button type="button" class="sym-btn" data-sym="¬">¬</button>
+          <button type="button" class="sym-btn" data-sym=" ∧ ">∧</button>
+          <button type="button" class="sym-btn" data-sym=" ∨ ">∨</button>
+          <button type="button" class="sym-btn" data-sym=" → ">→</button>
+          <button type="button" class="sym-btn" data-sym=" ↔ ">↔</button>
+          <button type="button" class="sym-btn" data-sym="T">T</button>
+          <button type="button" class="sym-btn" data-sym="F">F</button>
+        </div>
+
+        <div class="input-group">
+          <label for="exprA">Ekspresi A (Ruas Kiri)</label>
+          <input type="text" id="exprA" class="expr-input" value="¬(p ∧ q)" placeholder="Contoh: ¬(p ∧ q) atau ~(p and q)" />
+        </div>
+
+        <div class="input-group">
+          <label for="exprB">Ekspresi B (Ruas Kanan)</label>
+          <input type="text" id="exprB" class="expr-input" value="¬p ∨ ¬q" placeholder="Contoh: ¬p ∨ ¬q atau ~p or ~q" />
+        </div>
+
+        <div class="actions" style="justify-content: flex-start; margin-top: 12px;">
+          <button type="button" class="btn-primary" id="checkEqBtn">Cek Ekuivalensi</button>
+          <button type="button" class="btn-amber" id="clearSimBtn">Bersihkan</button>
+        </div>
+
+        <div class="sim-status" id="simStatus"></div>
+        <div class="table-wrap" id="ttWrap"></div>
+
+        <div class="syntax-note">
+          <strong>Notasi yang didukung:</strong> Variabel <code>p, q, r</code> • Konstanta <code>T, F, 1, 0</code> • Negasi <code>¬ ~ ! not</code> • Konjungsi <code>∧ &amp; &amp;&amp; and</code> • Disjungsi <code>∨ | || or</code> • Implikasi <code>→ -&gt;</code> • Biimplikasi <code>↔ &lt;-&gt;</code>.
+        </div>
+      </section>
+    </div>
+
+    <footer class="footer-note">
+      Buku Ajar Digital Logika Matematika — Program Studi S1 Ilmu Komputer
+    </footer>
+  </main>
+
+  <script>
+    // =========================================================================
+    // NAVIGASI TAB
+    // =========================================================================
+    const tabQuizBtn = document.getElementById("tabQuizBtn");
+    const tabSimBtn = document.getElementById("tabSimBtn");
+    const panelQuiz = document.getElementById("panelQuiz");
+    const panelSim = document.getElementById("panelSim");
+
+    function switchTab(target) {
+      const isQuiz = target === "quiz";
+      tabQuizBtn.classList.toggle("active", isQuiz);
+      tabSimBtn.classList.toggle("active", !isQuiz);
+      tabQuizBtn.setAttribute("aria-selected", String(isQuiz));
+      tabSimBtn.setAttribute("aria-selected", String(!isQuiz));
+      panelQuiz.classList.toggle("active", isQuiz);
+      panelSim.classList.toggle("active", !isQuiz);
+    }
+
+    tabQuizBtn.addEventListener("click", () => switchTab("quiz"));
+    tabSimBtn.addEventListener("click", () => switchTab("sim"));
+
+    // =========================================================================
+    // TAB 1: KUIS INTERAKTIF (8 SOAL TERVERIFIKASI)
+    // =========================================================================
+    const QUESTIONS = [
+      {
+        cat: "1. Identifikasi Hukum",
+        text: "Hukum logika manakah yang mendasari ekuivalensi berikut?",
+        formula: "p ∨ T ≡ T",
+        options: ["Hukum Identitas", "Hukum Dominasi", "Hukum Idempoten", "Hukum Komplemen"],
+        answer: 1,
+        steps: [
+          "Operator disjungsi (∨) bernilai Benar begitu minimal satu sukunya bernilai Benar (T).",
+          "Karena suku kanan adalah konstanta T, hasilnya langsung terkunci menjadi T apa pun nilai p.",
+          "Pola p ∨ T ≡ T dan p ∧ F ≡ F adalah Hukum Dominasi."
+        ]
+      },
+      {
+        cat: "2. Hukum De Morgan (Konjungsi)",
+        text: "Bentuk ekuivalen tanpa tanda negasi di luar kurung dari ekspresi berikut adalah...",
+        formula: "¬(p ∧ ¬q)",
+        options: ["¬p ∧ q", "¬p ∨ ¬q", "¬p ∨ q", "p ∨ ¬q"],
+        answer: 2,
+        steps: [
+          "Terapkan Hukum De Morgan: ¬(p ∧ ¬q) ≡ ¬p ∨ ¬(¬q) (sebarkan negasi dan balik ∧ menjadi ∨).",
+          "Terapkan Hukum Negasi Ganda pada ¬(¬q) ≡ q.",
+          "Hasil akhir yang terverifikasi: ¬p ∨ q."
+        ]
+      },
+      {
+        cat: "3. Hukum De Morgan (Disjungsi)",
+        text: "Sederhanakan ekspresi negasi disjungsi berikut dengan Hukum De Morgan:",
+        formula: "¬(¬p ∨ q)",
+        options: ["p ∧ ¬q", "p ∨ ¬q", "¬p ∧ ¬q", "p ∧ q"],
+        answer: 0,
+        steps: [
+          "Terapkan Hukum De Morgan: ¬(¬p ∨ q) ≡ ¬(¬p) ∧ ¬q (balik operator ∨ menjadi ∧).",
+          "Terapkan Hukum Negasi Ganda: ¬(¬p) ≡ p.",
+          "Hasil akhir: p ∧ ¬q."
+        ]
+      },
+      {
+        cat: "4. Hukum Absorpsi",
+        text: "Hasil penyederhanaan paling ringkas dari ekspresi tiga variabel berikut adalah...",
+        formula: "p ∨ (p ∧ q ∧ r)",
+        options: ["p ∧ q", "p ∨ q ∨ r", "p", "q ∧ r"],
+        answer: 2,
+        steps: [
+          "Gunakan Hukum Asosiatif: p ∨ (p ∧ (q ∧ r)).",
+          "Dengan prinsip substitusi (misalkan B = q ∧ r), bentuknya menjadi p ∨ (p ∧ B).",
+          "Sesuai Hukum Absorpsi, p ∨ (p ∧ B) ≡ p."
+        ]
+      },
+      {
+        cat: "5. Penyederhanaan Distributif & Komplemen",
+        text: "Sederhanakan ekspresi berikut menggunakan pemfaktoran Distributif:",
+        formula: "(p ∧ q) ∨ (p ∧ ¬q)",
+        options: ["q", "p", "T", "p ∧ q"],
+        answer: 1,
+        steps: [
+          "Faktorkan p dengan Hukum Distributif terbalik: p ∧ (q ∨ ¬q).",
+          "Terapkan Hukum Komplemen pada (q ∨ ¬q) ≡ T sehingga menjadi p ∧ T.",
+          "Terapkan Hukum Identitas: p ∧ T ≡ p."
+        ]
+      },
+      {
+        cat: "6. Negasi Implikasi",
+        text: "Pernyataan mana yang ekuivalen dengan negasi implikasi di bawah ini?",
+        formula: "¬(p → q)",
+        options: ["¬p ∨ q", "p → ¬q", "p ∧ ¬q", "¬p ∧ ¬q"],
+        answer: 2,
+        steps: [
+          "Ubah implikasi memakai Ekuivalensi Implikasi: ¬(p → q) ≡ ¬(¬p ∨ q).",
+          "Terapkan Hukum De Morgan: ¬(¬p) ∧ ¬q.",
+          "Terapkan Hukum Negasi Ganda: p ∧ ¬q."
+        ]
+      },
+      {
+        cat: "7. Optimasi Kode Python (SIAKAD)",
+        text: "Ekspresi validasi KRS di bawah ini paling tepat diringkas menjadi...",
+        formula: "not (not u or s) and u",
+        options: ["u and not s", "u or not s", "not u and s", "u and s"],
+        answer: 0,
+        steps: [
+          "De Morgan & Negasi Ganda pada suku kiri: not (not u or s) ≡ u and not s.",
+          "Gabungkan dengan suku kanan: (u and not s) and u ≡ (u and u) and not s (Komutatif & Asosiatif).",
+          "Hukum Idempoten (u and u ≡ u) menghasilkan: u and not s."
+        ]
+      },
+      {
+        cat: "8. Short-Circuit Evaluation (C++ / Python)",
+        text: "Saat x = 0, mengapa kode di bawah ini aman dan TIDAK memicu error pembagian nol?",
+        formula: "if (x != 0) and (10 / x > 2):",
+        options: [
+          "Karena operator and bersifat komutatif sehingga Python membalik urutannya.",
+          "Karena suku kiri False memicu Hukum Dominasi (F ∧ q ≡ F) sehingga suku kanan dilewati.",
+          "Karena Hukum Identitas mengubah (10 / x > 2) menjadi True otomatis.",
+          "Karena Hukum Absorpsi menghapus variabel x sebelum pembagian dieksekusi."
+        ],
+        answer: 1,
+        steps: [
+          "Saat x = 0, ekspresi kiri (x != 0) bernilai False (F).",
+          "Berdasarkan Hukum Dominasi (F ∧ q ≡ F), hasil seluruh konjungsi pasti False apa pun nilai suku kanan.",
+          "Melalui short-circuit evaluation, eksekusi langsung berhenti sehingga operasi (10 / 0) tidak pernah dijalankan."
+        ]
+      }
+    ];
+
+    const LETTERS = ["A", "B", "C", "D"];
+    let idx = 0;
+    let score = 0;
+    let history = [];
+
+    const qCounter = document.getElementById("qCounter");
+    const scoreLive = document.getElementById("scoreLive");
+    const progressBar = document.getElementById("progressBar");
+    const qCat = document.getElementById("qCat");
+    const qText = document.getElementById("qText");
+    const qFormula = document.getElementById("qFormula");
+    const optionsBox = document.getElementById("optionsBox");
+    const feedbackBox = document.getElementById("feedbackBox");
+    const feedbackTitle = document.getElementById("feedbackTitle");
+    const feedbackDesc = document.getElementById("feedbackDesc");
+    const feedbackSteps = document.getElementById("feedbackSteps");
+    const nextBtn = document.getElementById("nextBtn");
+    const quizView = document.getElementById("quizView");
+    const resultView = document.getElementById("resultView");
+    const progressWrap = document.getElementById("progressWrap");
+
+    function renderQuestion() {
+      const q = QUESTIONS[idx];
+      qCounter.textContent = `Soal ${idx + 1} dari ${QUESTIONS.length}`;
+      scoreLive.textContent = `Skor: ${score}`;
+      progressBar.style.width = `${(idx / QUESTIONS.length) * 100}%`;
+
+      qCat.textContent = q.cat;
+      qText.textContent = q.text;
+      qFormula.textContent = q.formula;
+
+      optionsBox.innerHTML = "";
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement("button");
+        btn.className = "opt-btn";
+        btn.innerHTML = `<span class="opt-letter">${LETTERS[i]}</span><span>${opt}</span>`;
+        btn.addEventListener("click", () => selectOption(i));
+        optionsBox.appendChild(btn);
+      });
+
+      feedbackBox.className = "feedback";
+      nextBtn.disabled = true;
+      nextBtn.textContent = idx === QUESTIONS.length - 1 ? "Lihat Skor Akhir →" : "Soal Berikutnya →";
+    }
+
+    function selectOption(choice) {
+      const q = QUESTIONS[idx];
+      const buttons = optionsBox.querySelectorAll(".opt-btn");
+      buttons.forEach((b, i) => {
+        b.disabled = true;
+        if (i === q.answer) b.classList.add("correct");
+        if (i === choice && choice !== q.answer) b.classList.add("wrong");
+      });
+
+      const isOk = choice === q.answer;
+      if (isOk) score++;
+      history.push({ cat: q.cat, ok: isOk });
+      scoreLive.textContent = `Skor: ${score}`;
+
+      feedbackBox.className = `feedback show ${isOk ? "is-ok" : "is-wrong"}`;
+      feedbackTitle.textContent = isOk
+        ? "✓ Tepat! Logika Anda akurat."
+        : `✕ Kurang tepat. Jawaban benar: ${LETTERS[q.answer]}. ${q.options[q.answer]}`;
+      feedbackDesc.textContent = "Pembahasan langkah demi langkah:";
+      feedbackSteps.innerHTML = q.steps.map(s => `<li>${s}</li>`).join("");
+
+      nextBtn.disabled = false;
+    }
+
+    function showResult() {
+      progressBar.style.width = "100%";
+      quizView.style.display = "none";
+      progressWrap.style.display = "none";
+      resultView.classList.add("show");
+
+      const pct = Math.round((score / QUESTIONS.length) * 100);
+      document.getElementById("finalScore").textContent = `${score}/${QUESTIONS.length}`;
+      document.getElementById("finalPct").textContent = `${pct}%`;
+
+      let title = "Perlu Latihan Lagi";
+      let desc = "Tinjau kembali Tabel 4.1 dan 4 Tahap Strategi Penyederhanaan, lalu coba ulangi kuis ini.";
+      if (pct === 100) {
+        title = "Sempurna! Penguasaan Penuh";
+        desc = "Seluruh hukum logika, De Morgan, penyederhanaan aljabar, hingga short-circuit sudah Anda kuasai.";
+      } else if (pct >= 75) {
+        title = "Bagus Sekali! Siap ke Bab V";
+        desc = "Pemahaman Anda terhadap hukum logika sudah kuat. Periksa satu atau dua nomor yang meleset agar makin solid.";
+      } else if (pct >= 50) {
+        title = "Cukup Baik — Tingkatkan Ketelitian";
+        desc = "Konsep dasar sudah terbentuk, tetapi masih perlu latihan membalik operator De Morgan dan pemfaktoran.";
+      }
+
+      document.getElementById("resultTitle").textContent = title;
+      document.getElementById("resultDesc").textContent = desc;
+      document.getElementById("summaryList").innerHTML = history
+        .map(h => `<div class="summary-item"><span>${h.cat}</span><span class="${h.ok ? "tag-ok" : "tag-no"}">${h.ok ? "✓ Benar" : "✕ Salah"}</span></div>`)
+        .join("");
+    }
+
+    nextBtn.addEventListener("click", () => {
+      if (idx < QUESTIONS.length - 1) {
+        idx++;
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    });
+
+    document.getElementById("retryBtn").addEventListener("click", () => {
+      idx = 0;
+      score = 0;
+      history = [];
+      resultView.classList.remove("show");
+      quizView.style.display = "block";
+      progressWrap.style.display = "block";
+      renderQuestion();
+    });
+
+    renderQuestion();
+
+    // =========================================================================
+    // TAB 2: SIMULATOR EKUIVALENSI LOGIKA (SAFE RECURSIVE-DESCENT PARSER)
+    // =========================================================================
+    const PRESETS = [
+      { label: "De Morgan 1", a: "¬(p ∧ q)", b: "¬p ∨ ¬q" },
+      { label: "De Morgan 2", a: "¬(p ∨ q)", b: "¬p ∧ ¬q" },
+      { label: "Absorpsi", a: "p ∨ (p ∧ q)", b: "p" },
+      { label: "Distributif", a: "p ∧ (q ∨ r)", b: "(p ∧ q) ∨ (p ∧ r)" },
+      { label: "Kontraposisi", a: "p → q", b: "¬q → ¬p" },
+      { label: "Kasus KRS", a: "¬(¬p ∨ r) ∧ (q ∨ (q ∧ p)) ∧ ¬(¬q ∨ ¬p)", b: "p ∧ q ∧ ¬r" },
+      { label: "Contoh Tidak Ekuivalen", a: "(p ∨ q) ∧ r", b: "p ∨ (q ∧ r)" }
+    ];
+
+    const exprAInput = document.getElementById("exprA");
+    const exprBInput = document.getElementById("exprB");
+    const presetBox = document.getElementById("presetBox");
+    const simStatus = document.getElementById("simStatus");
+    const ttWrap = document.getElementById("ttWrap");
+    let activeInput = exprAInput;
+
+    exprAInput.addEventListener("focus", () => { activeInput = exprAInput; });
+    exprBInput.addEventListener("focus", () => { activeInput = exprBInput; });
+
+    PRESETS.forEach(pr => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "preset-chip";
+      btn.textContent = pr.label;
+      btn.addEventListener("click", () => {
+        exprAInput.value = pr.a;
+        exprBInput.value = pr.b;
+        runSimulator();
+      });
+      presetBox.appendChild(btn);
+    });
+
+    document.querySelectorAll(".sym-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const sym = btn.getAttribute("data-sym");
+        const start = activeInput.selectionStart ?? activeInput.value.length;
+        const end = activeInput.selectionEnd ?? activeInput.value.length;
+        const val = activeInput.value;
+        activeInput.value = val.slice(0, start) + sym + val.slice(end);
+        activeInput.focus();
+        const pos = start + sym.length;
+        activeInput.setSelectionRange(pos, pos);
+      });
+    });
+
+    function tokenize(input) {
+      const tokens = [];
+      let i = 0;
+      const s = input.trim();
+      while (i < s.length) {
+        const ch = s[i];
+        if (/\s/.test(ch)) { i++; continue; }
+        if (ch === "(" || ch === ")") { tokens.push({ type: ch }); i++; continue; }
+        if (ch === "¬" || ch === "~" || ch === "!") { tokens.push({ type: "NOT" }); i++; continue; }
+        if (ch === "∧") { tokens.push({ type: "AND" }); i++; continue; }
+        if (ch === "∨") { tokens.push({ type: "OR" }); i++; continue; }
+        if (ch === "→") { tokens.push({ type: "IMP" }); i++; continue; }
+        if (ch === "↔") { tokens.push({ type: "IFF" }); i++; continue; }
+        if (s.slice(i, i + 3) === "<->") { tokens.push({ type: "IFF" }); i += 3; continue; }
+        if (s.slice(i, i + 2) === "->") { tokens.push({ type: "IMP" }); i += 2; continue; }
+        if (s.slice(i, i + 2) === "&&") { tokens.push({ type: "AND" }); i += 2; continue; }
+        if (s.slice(i, i + 2) === "||") { tokens.push({ type: "OR" }); i += 2; continue; }
+        if (ch === "&" || ch === "^") { tokens.push({ type: "AND" }); i++; continue; }
+        if (ch === "|") { tokens.push({ type: "OR" }); i++; continue; }
+        if (ch === "1") { tokens.push({ type: "CONST", value: true }); i++; continue; }
+        if (ch === "0") { tokens.push({ type: "CONST", value: false }); i++; continue; }
+
+        if (/[A-Za-z]/.test(ch)) {
+          let j = i;
+          while (j < s.length && /[A-Za-z]/.test(s[j])) j++;
+          const word = s.slice(i, j);
+          const low = word.toLowerCase();
+          if (low === "not") tokens.push({ type: "NOT" });
+          else if (low === "and") tokens.push({ type: "AND" });
+          else if (low === "or" || low === "v") tokens.push({ type: "OR" });
+          else if (low === "true" || word === "T") tokens.push({ type: "CONST", value: true });
+          else if (low === "false" || word === "F") tokens.push({ type: "CONST", value: false });
+          else if (low === "p" || low === "q" || low === "r") tokens.push({ type: "VAR", name: low });
+          else throw new Error(`Token tidak dikenali: "${word}". Gunakan variabel p, q, atau r.`);
+          i = j;
+          continue;
+        }
+        throw new Error(`Karakter tidak dikenali: "${ch}"`);
+      }
+      return tokens;
+    }
+
+    function parseExpr(str) {
+      const tokens = tokenize(str);
+      if (tokens.length === 0) throw new Error("Ekspresi tidak boleh kosong.");
+      let pos = 0;
+
+      function peek() { return tokens[pos]; }
+      function consume(expected) {
+        const tok = tokens[pos];
+        if (!tok || (expected && tok.type !== expected)) {
+          throw new Error("Struktur tanda kurung atau operator belum lengkap.");
+        }
+        pos++;
+        return tok;
+      }
+
+      // Precedence: IFF < IMP < OR < AND < NOT < PRIMARY
+      function parseIff() {
+        let node = parseImp();
+        while (peek() && peek().type === "IFF") {
+          consume("IFF");
+          node = { op: "IFF", left: node, right: parseImp() };
+        }
+        return node;
+      }
+
+      function parseImp() {
+        let node = parseOr();
+        if (peek() && peek().type === "IMP") {
+          consume("IMP");
+          node = { op: "IMP", left: node, right: parseImp() };
+        }
+        return node;
+      }
+
+      function parseOr() {
+        let node = parseAnd();
+        while (peek() && peek().type === "OR") {
+          consume("OR");
+          node = { op: "OR", left: node, right: parseAnd() };
+        }
+        return node;
+      }
+
+      function parseAnd() {
+        let node = parseNot();
+        while (peek() && peek().type === "AND") {
+          consume("AND");
+          node = { op: "AND", left: node, right: parseNot() };
+        }
+        return node;
+      }
+
+      function parseNot() {
+        if (peek() && peek().type === "NOT") {
+          consume("NOT");
+          return { op: "NOT", child: parseNot() };
+        }
+        return parsePrimary();
+      }
+
+      function parsePrimary() {
+        const tok = peek();
+        if (!tok) throw new Error("Ekspresi terpotong di tengah.");
+        if (tok.type === "(") {
+          consume("(");
+          const inner = parseIff();
+          consume(")");
+          return inner;
+        }
+        if (tok.type === "VAR") {
+          consume("VAR");
+          return { op: "VAR", name: tok.name };
+        }
+        if (tok.type === "CONST") {
+          consume("CONST");
+          return { op: "CONST", value: tok.value };
+        }
+        throw new Error(`Operator tak terduga di posisi token ke-${pos + 1}.`);
+      }
+
+      const ast = parseIff();
+      if (pos < tokens.length) throw new Error("Ada simbol berlebih atau operator yang kurang.");
+      const vars = new Set();
+      tokens.forEach(t => { if (t.type === "VAR") vars.add(t.name); });
+      return { ast, vars };
+    }
+
+    function evalAst(node, env) {
+      switch (node.op) {
+        case "CONST": return node.value;
+        case "VAR": return env[node.name];
+        case "NOT": return !evalAst(node.child, env);
+        case "AND": return evalAst(node.left, env) && evalAst(node.right, env);
+        case "OR": return evalAst(node.left, env) || evalAst(node.right, env);
+        case "IMP": return (!evalAst(node.left, env)) || evalAst(node.right, env);
+        case "IFF": return evalAst(node.left, env) === evalAst(node.right, env);
+      }
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function runSimulator() {
+      try {
+        const rawA = exprAInput.value.trim();
+        const rawB = exprBInput.value.trim();
+        const parsedA = parseExpr(rawA);
+        const parsedB = parseExpr(rawB);
+
+        const varList = ["p", "q", "r"].filter(v => parsedA.vars.has(v) || parsedB.vars.has(v));
+        const totalRows = Math.pow(2, varList.length);
+        let diffCount = 0;
+        const rowsHtml = [];
+
+        for (let mask = totalRows - 1; mask >= 0; mask--) {
+          const env = {};
+          const cells = [];
+          varList.forEach((v, idxVar) => {
+            const bit = Boolean((mask >> (varList.length - 1 - idxVar)) & 1);
+            env[v] = bit;
+            cells.push(`<td class="${bit ? "val-t" : "val-f"}">${bit ? "T" : "F"}</td>`);
+          });
+          const resA = evalAst(parsedA.ast, env);
+          const resB = evalAst(parsedB.ast, env);
+          const same = resA === resB;
+          if (!same) diffCount++;
+
+          cells.push(`<td class="${resA ? "val-t" : "val-f"}">${resA ? "T" : "F"}</td>`);
+          cells.push(`<td class="${resB ? "val-t" : "val-f"}">${resB ? "T" : "F"}</td>`);
+          cells.push(`<td>${same ? "✓ Sama" : "✕ Beda"}</td>`);
+          rowsHtml.push(`<tr class="${same ? "" : "row-diff"}">${cells.join("")}</tr>`);
+        }
+
+        const headers = [
+          ...varList.map(v => `<th>${v}</th>`),
+          `<th>A: ${escapeHtml(rawA)}</th>`,
+          `<th>B: ${escapeHtml(rawB)}</th>`,
+          `<th>Status</th>`
+        ].join("");
+
+        ttWrap.innerHTML = `<table class="tt"><thead><tr>${headers}</tr></thead><tbody>${rowsHtml.join("")}</tbody></table>`;
+        ttWrap.classList.add("show");
+
+        if (diffCount === 0) {
+          simStatus.className = "sim-status show eq";
+          simStatus.innerHTML = `✓ EKUIVALEN (A ≡ B)<span class="sim-sub">Seluruh ${totalRows} kombinasi input menghasilkan nilai kebenaran yang identik.</span>`;
+        } else {
+          simStatus.className = "sim-status show neq";
+          simStatus.innerHTML = `✕ TIDAK EKUIVALEN (A ≢ B)<span class="sim-sub">Ditemukan ${diffCount} dari ${totalRows} baris contoh penyangkal (ditandai warna merah muda).</span>`;
+        }
+      } catch (err) {
+        simStatus.className = "sim-status show err";
+        simStatus.innerHTML = `Periksa Penulisan Rumus<span class="sim-sub">${escapeHtml(err.message)}</span>`;
+        ttWrap.classList.remove("show");
+      }
+    }
+
+    document.getElementById("checkEqBtn").addEventListener("click", runSimulator);
+    document.getElementById("clearSimBtn").addEventListener("click", () => {
+      exprAInput.value = "";
+      exprBInput.value = "";
+      simStatus.className = "sim-status";
+      ttWrap.classList.remove("show");
+      exprAInput.focus();
+    });
+
+    // Jalankan sekali di latar agar tabel langsung siap saat pengguna membuka Tab 2
+    runSimulator();
+  </script>
+</body>
+</html>
